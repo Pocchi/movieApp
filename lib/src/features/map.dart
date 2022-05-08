@@ -37,6 +37,12 @@ class Map extends HookWidget {
                 latitude: _data[index].latitude,
                 longitude: _data[index].longitude,
                 iconColor: Colors.blue,
+                child: GestureDetector(
+                  onTap: () {
+                    print("${index}: onTap called.");
+                  },
+                  child: Icon(Icons.add_location),
+                ),
               );
             },
           ),
