@@ -39,6 +39,7 @@ dependencies:
   hooks_riverpod: ^1.0.3
   flutter_hooks: ^0.18.3
   flutter_native_splash: ^2.1.6
+  syncfusion_flutter_maps: ^20.1.52
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +59,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/.env
+    - assets/countries.json
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
