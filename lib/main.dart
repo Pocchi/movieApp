@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movie/src/features/searchMovies.dart';
+import 'package:movie/src/features/map.dart';
 
 Future main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -21,8 +23,7 @@ class MyApp extends StatelessWidget {
       title: 'Movie Trip',
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: Colors.lightBlue[800],
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.grey[50],
       ),
       darkTheme: ThemeData(
       brightness: Brightness.dark,
@@ -31,7 +32,44 @@ class MyApp extends StatelessWidget {
       textTheme: const TextTheme(
       ),
     ),
-    home: const SearchMovies(),
+    home: const ScreenContainer(),
+    );
+  }
+}
+
+enum TabType { map }
+final tabTypeProvider = StateProvider<TabType>((ref) => TabType.map);
+
+class ScreenContainer extends HookConsumerWidget {
+  const ScreenContainer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tabType = ref.watch(tabTypeProvider.state);
+    final _screens = [
+      const Map(),
+    ];
+
+    return Scaffold(
+      body: _screens[tabType.state.index],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: tabType.state.index,
+        onTap: (int selectIndex) {
+          tabType.state = TabType.values[selectIndex];
+        },
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'map',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.collections_bookmark),
+            label: 'collection',
+          ),
+        ],
+      ),
     );
   }
 }
