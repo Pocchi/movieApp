@@ -4,6 +4,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movie/src/features/searchMovies.dart';
 import 'package:movie/src/features/map.dart';
+import 'package:movie/src/features/movieList.dart';
+import 'package:movie/src/models/globalState.dart';
 
 Future main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -37,9 +39,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-enum TabType { map }
-final tabTypeProvider = StateProvider<TabType>((ref) => TabType.map);
-
 class ScreenContainer extends HookConsumerWidget {
   const ScreenContainer({Key? key}) : super(key: key);
 
@@ -47,7 +46,8 @@ class ScreenContainer extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tabType = ref.watch(tabTypeProvider.state);
     final _screens = [
-      const Map(),
+      // const Map(),
+      const MovieList(),
     ];
 
     return Scaffold(

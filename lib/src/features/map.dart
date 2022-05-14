@@ -1,9 +1,6 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:syncfusion_flutter_maps/maps.dart';
-
 
 class CountryModel {
   const CountryModel(this.country, this.latitude, this.longitude);
