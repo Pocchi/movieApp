@@ -19,6 +19,8 @@ class MovieList extends HookConsumerWidget {
     final selectedCountry = ref.watch(countryProvider.state);
     final searchMovie = useState<SearchMovieModel?>(null);
     final movies = useState<List<MovieResultModel>>([]);
+    final ScrollController _scrollController = ScrollController();
+    final requestPage = useState(1); // 現在リクエスト中のページ
 
     void fetchData(int page) async {
       print(selectedCountry.state);
@@ -33,18 +35,35 @@ class MovieList extends HookConsumerWidget {
       fetchData(1);
     }, []);
 
+    _scrollController.addListener(() {
+      if (_scrollController.position.maxScrollExtent <= _scrollController.position.pixels) {
+        int requestedPage = searchMovie.value?.page ?? 1; // すでにfetch済のページ
+        int totalPages = searchMovie.value?.totalPages ?? 1; // 全ページ
+        if (requestPage.value == requestedPage && requestPage.value < totalPages) {
+          fetchData(requestPage.value + 1);
+          requestPage.value++;
+        }
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('検索した映画'),
       ),
       body: Container(
-        child: GridView.count(
-          crossAxisCount: 4,
+        child: GridView.builder(
+          itemBuilder: (BuildContext context, int index) {
+            return _listItem(movies.value[index]);
+          },
+          itemCount: movies.value.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            mainAxisSpacing: 1,
+            crossAxisSpacing: 1,
+            childAspectRatio: (itemWidth / itemHeight),
+          ),
           padding: const EdgeInsets.all(1),
-          mainAxisSpacing: 1,
-          crossAxisSpacing: 1,
-          childAspectRatio: (itemWidth / itemHeight),
-          children: movies.value.map((movie) => _listItem(movie)).toList(),
+          controller: _scrollController,
         )
       ),
     );
