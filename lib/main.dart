@@ -46,8 +46,8 @@ class ScreenContainer extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tabType = ref.watch(tabTypeProvider.state);
     final _screens = [
-      // const Map(),
-      const MovieList(),
+      const Map(),
+      // const MovieList(),
     ];
 
     return Scaffold(

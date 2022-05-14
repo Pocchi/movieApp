@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:dio/dio.dart';
 import 'package:movie/src/apis/movie.dart';
 import 'package:movie/src/models/globalState.dart';
 import 'package:movie/src/models/searchMovies.dart';
-import 'dart:convert';
 
 const double itemWidth = 220;
 const double itemHeight = 330;
@@ -50,7 +48,7 @@ class MovieList extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('検索した映画'),
+        title: Text("${selectedCountry.state} Movies"),
       ),
       body: Stack(
           children: [
