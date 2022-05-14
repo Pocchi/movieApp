@@ -52,19 +52,26 @@ class MovieList extends HookConsumerWidget {
       ),
       body: Stack(
           children: [
-            GridView.builder(
-              itemBuilder: (BuildContext context, int index) {
-                return _listItem(movies.value[index]);
-              },
-              itemCount: movies.value.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                mainAxisSpacing: 1,
-                crossAxisSpacing: 1,
-                childAspectRatio: (itemWidth / itemHeight),
-              ),
-              padding: const EdgeInsets.all(1),
+            CustomScrollView(
               controller: _scrollController,
+              slivers: [
+                SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    mainAxisSpacing: 1,
+                    crossAxisSpacing: 1,
+                    childAspectRatio: (itemWidth / itemHeight),
+                  ),
+                  delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+                    return _listItem(movies.value[index]);
+                  },
+                  childCount: movies.value.length,
+                  )
+                ),
+                const SliverToBoxAdapter(
+                  child: Padding(padding: EdgeInsets.only(bottom: 150)),
+                ),
+              ],
             ),
             Padding(
                 padding: const EdgeInsets.all(5),
