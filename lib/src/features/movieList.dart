@@ -57,7 +57,25 @@ class MovieList extends HookConsumerWidget {
     return SizedBox(
       height: itemHeight,
       width: itemWidth,
-      child: posterImage == null ? Image.asset(noImage, fit: BoxFit.cover) : Image.network("$imagePath$posterImage", fit: BoxFit.cover)
+      child: posterImage == null ?
+          Stack(alignment: AlignmentDirectional.center,
+              children:[
+                Image.asset(noImage, fit: BoxFit.cover),
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text(movie.title ?? '',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                      color: Colors.white,
+                      height: 1.6,
+                    ))
+                )
+              ]
+          )
+        : Image.network("$imagePath$posterImage", fit: BoxFit.cover)
+
     );
   }
 }

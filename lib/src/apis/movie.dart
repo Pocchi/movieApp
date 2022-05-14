@@ -14,7 +14,7 @@ class MovieApi {
           queryParameters: {
             'api_key': dotenv.env['MOVIEDB_APIKEY'],
             'language': language,
-            'query': 'country $keyword',
+            'query': keyword,
             'page': page,
             'include_adult': 'false'
           }
