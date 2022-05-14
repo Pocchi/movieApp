@@ -21,6 +21,7 @@ class MovieList extends HookConsumerWidget {
     final movies = useState<List<MovieResultModel>>([]);
     final ScrollController _scrollController = ScrollController();
     final requestPage = useState(1); // 現在リクエスト中のページ
+    final resultsText = useState('');
 
     void fetchData(int page) async {
       print(selectedCountry.state);
@@ -29,6 +30,7 @@ class MovieList extends HookConsumerWidget {
       var resultData = decodeData['results'];
       resultData.forEach((item) => movies.value.add(MovieResultModel.fromJson(item)));
       searchMovie.value = SearchMovieModel.fromJson(decodeData);
+      resultsText.value = "${movies.value.length}/${searchMovie.value?.totalResults ?? ''}";
     }
 
     useEffect(() {
@@ -37,8 +39,8 @@ class MovieList extends HookConsumerWidget {
 
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent <= _scrollController.position.pixels) {
-        int requestedPage = searchMovie.value?.page ?? 1; // すでにfetch済のページ
-        int totalPages = searchMovie.value?.totalPages ?? 1; // 全ページ
+        int requestedPage = searchMovie.value?.page ?? 1;
+        int totalPages = searchMovie.value?.totalPages ?? 1;
         if (requestPage.value == requestedPage && requestPage.value < totalPages) {
           fetchData(requestPage.value + 1);
           requestPage.value++;
@@ -50,21 +52,35 @@ class MovieList extends HookConsumerWidget {
       appBar: AppBar(
         title: const Text('検索した映画'),
       ),
-      body: Container(
-        child: GridView.builder(
-          itemBuilder: (BuildContext context, int index) {
-            return _listItem(movies.value[index]);
-          },
-          itemCount: movies.value.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            mainAxisSpacing: 1,
-            crossAxisSpacing: 1,
-            childAspectRatio: (itemWidth / itemHeight),
-          ),
-          padding: const EdgeInsets.all(1),
-          controller: _scrollController,
-        )
+      body: Stack(
+          children: [
+            GridView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                return _listItem(movies.value[index]);
+              },
+              itemCount: movies.value.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                mainAxisSpacing: 1,
+                crossAxisSpacing: 1,
+                childAspectRatio: (itemWidth / itemHeight),
+              ),
+              padding: const EdgeInsets.all(1),
+              controller: _scrollController,
+            ),
+            Padding(
+                padding: const EdgeInsets.all(5),
+                child: Text(resultsText.value,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                      color: Colors.white,
+                      height: 1.6,
+                      backgroundColor: Color.fromRGBO(0, 0, 0, 0.3),
+                    ))
+            ),
+        ]
       ),
     );
   }
@@ -81,7 +97,7 @@ class MovieList extends HookConsumerWidget {
               children:[
                 Image.asset(noImage, fit: BoxFit.cover),
                 Padding(
-                  padding: EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(5),
                   child: Text(movie.title ?? '',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
@@ -94,7 +110,6 @@ class MovieList extends HookConsumerWidget {
               ]
           )
         : Image.network("$imagePath$posterImage", fit: BoxFit.cover)
-
     );
   }
 }
