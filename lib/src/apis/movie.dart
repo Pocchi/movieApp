@@ -19,7 +19,6 @@ class MovieApi {
             'include_adult': 'false'
           }
       );
-      print(response.data.toString());
       return response.data;
     } catch (e) {
       print(e);

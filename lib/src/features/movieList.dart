@@ -92,7 +92,7 @@ class MovieList extends HookConsumerWidget {
 
   Widget _listItem(MovieResultModel movie) {
     String? posterImage = movie.posterPath;
-    const imagePath = 'https://image.tmdb.org/t/p/w500/';
+    const imagePath = 'https://image.tmdb.org/t/p/w500';
     return SizedBox(
       height: itemHeight,
       width: itemWidth,

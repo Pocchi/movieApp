@@ -6,6 +6,7 @@ import 'package:movie/src/features/searchMovies.dart';
 import 'package:movie/src/features/map.dart';
 import 'package:movie/src/features/movieList.dart';
 import 'package:movie/src/models/globalState.dart';
+import 'package:movie/src/features/movieDetail.dart';
 
 Future main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -46,7 +47,8 @@ class ScreenContainer extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tabType = ref.watch(tabTypeProvider.state);
     final _screens = [
-      const Map(),
+      const MovieDetail(),
+      // const Map(),
       // const MovieList(),
     ];
 
