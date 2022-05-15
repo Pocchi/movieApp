@@ -91,19 +91,28 @@ class MovieList extends HookConsumerWidget {
   }
 
   Widget _listItem(MovieResultModel movie) {
-    const noImage = 'assets/images/noimage@3x.png';
     String? posterImage = movie.posterPath;
     const imagePath = 'https://image.tmdb.org/t/p/w500/';
     return SizedBox(
       height: itemHeight,
       width: itemWidth,
       child: posterImage == null ?
-          Stack(alignment: AlignmentDirectional.center,
-              children:[
-                Image.asset(noImage, fit: BoxFit.cover),
-                Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: Text(movie.title ?? '',
+        _noImageView(movie)
+        : Image.network("$imagePath$posterImage", fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return _noImageView(movie);
+            }),
+    );
+  }
+
+  Widget _noImageView(MovieResultModel movie) {
+    const noImage = 'assets/images/noimage@3x.png';
+    return Stack(alignment: AlignmentDirectional.center,
+          children:[
+            Image.asset(noImage, fit: BoxFit.cover),
+            Padding(
+                padding: const EdgeInsets.all(5),
+                child: Text(movie.title ?? '',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -111,11 +120,9 @@ class MovieList extends HookConsumerWidget {
                       color: Colors.white,
                       height: 1.6,
                     ))
-                )
-              ]
-          )
-        : Image.network("$imagePath$posterImage", fit: BoxFit.cover)
-    );
+            )
+          ]
+      );
   }
 }
 
