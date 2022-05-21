@@ -7,9 +7,15 @@ import 'package:movie/src/features/map.dart';
 import 'package:movie/src/features/movieList.dart';
 import 'package:movie/src/models/globalState.dart';
 import 'package:movie/src/features/movieDetail.dart';
+import 'package:movie/src/features/collectionList.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:movie/src/sqlite/collection.dart';
+
+late Database db;
 
 Future main() async {
   await dotenv.load(fileName: "assets/.env");
+  var db = await DB.instance.database;
   runApp(
     const ProviderScope(
      child: MyApp(),
@@ -17,8 +23,14 @@ Future main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +59,10 @@ class ScreenContainer extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tabType = ref.watch(tabTypeProvider.state);
     final _screens = [
-      const MovieDetail(),
+      // const MovieDetail(),
       // const Map(),
       // const MovieList(),
+      const CollectionList(),
     ];
 
     return Scaffold(

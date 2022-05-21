@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movie/src/apis/movie.dart';
 import 'package:movie/src/models/globalState.dart';
 import 'package:movie/src/models/searchMovies.dart';
+import 'package:movie/src/features/movieDetail.dart';
 
 const double itemWidth = 220;
 const double itemHeight = 330;
@@ -63,7 +64,15 @@ class MovieList extends HookConsumerWidget {
                     childAspectRatio: (itemWidth / itemHeight),
                   ),
                   delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-                    return _listItem(movies.value[index]);
+                    return GestureDetector(
+                        child: _listItem(movies.value[index]),
+                        onTap: (() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => MovieDetail(args: movies.value[index], country: selectedCountry.state)),
+                          );
+                        }),
+                    );
                   },
                   childCount: movies.value.length,
                   )
@@ -94,14 +103,14 @@ class MovieList extends HookConsumerWidget {
     String? posterImage = movie.posterPath;
     const imagePath = 'https://image.tmdb.org/t/p/w500';
     return SizedBox(
-      height: itemHeight,
-      width: itemWidth,
-      child: posterImage == null ?
-        _noImageView(movie)
-        : Image.network("$imagePath$posterImage", fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return _noImageView(movie);
-            }),
+        height: itemHeight,
+        width: itemWidth,
+        child: posterImage == null ?
+          _noImageView(movie)
+          : Image.network("$imagePath$posterImage", fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return _noImageView(movie);
+              }),
     );
   }
 
