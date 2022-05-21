@@ -125,6 +125,23 @@ class CollectionModel {
   }
 }
 
+class CollectionCountModel {
+  final String country;
+  final int count;
+
+  CollectionCountModel({
+    required this.country,
+    required this.count,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'country': country,
+      'count': count,
+    };
+  }
+}
+
 class MovieDetailModel {
   final bool? adult;
   final String? backdropPath;

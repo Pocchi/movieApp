@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:syncfusion_flutter_maps/maps.dart';
 import 'package:movie/src/models/globalState.dart';
 import 'package:movie/src/features/movieList.dart';
+import 'package:movie/src/sqlite/collection.dart';
+import 'package:movie/src/models/searchMovies.dart';
+import 'package:collection/collection.dart';
+
 
 class CountryModel {
-  const CountryModel(this.country, this.latitude, this.longitude);
+  CountryModel(this.country, this.latitude, this.longitude, this.count);
 
   final String country;
   final double latitude;
   final double longitude;
+  final int count;
 }
+
+late MapShapeLayerController _controller;
 
 class Map extends HookConsumerWidget {
   const Map({Key? key}) : super(key: key);
@@ -18,12 +26,13 @@ class Map extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedCountry = ref.watch(countryProvider.state);
+    final contries = useState<List<CountryModel>>([]);
     List<CountryModel> _data = <CountryModel>[
-      const CountryModel('Brazil', -14.235004, -51.92528),
-      const CountryModel('Germany', 51.16569, 10.451526),
-      const CountryModel('Australia', -25.274398, 133.775136),
-      const CountryModel('India', 20.593684, 78.96288),
-      const CountryModel('Russia', 61.52401, 105.318756)
+      CountryModel('Brazil', -14.235004, -51.92528, 0),
+      CountryModel('Germany', 51.16569, 10.451526, 0),
+      CountryModel('Australia', -25.274398, 133.775136, 0),
+      CountryModel('India', 20.593684, 78.96288, 0),
+      CountryModel('Russia', 61.52401, 105.318756, 0)
     ];
     final MapShapeSource _dataSource = MapShapeSource.asset(
       'assets/countries.json',
@@ -32,27 +41,56 @@ class Map extends HookConsumerWidget {
       primaryValueMapper: (index) => _data[index].country,
     );
 
+    void init() async {
+      _controller = MapShapeLayerController();
+      final db = await DB.instance.database;
+      var counts = await CollectionDB.hasCountCountry(db);
+      _data.asMap().forEach((index, element) {
+        var country = element.country;
+        print(country);
+        var getCount = counts.firstWhereOrNull((item) => item.country == country);
+        if (getCount != null) {
+          print(getCount.count);
+          contries.value.add(CountryModel(element.country, element.latitude, element.longitude, getCount.count));
+        } else {
+          contries.value.add(element);
+        }
+        _controller.insertMarker(index);
+      });
+    }
+
+    useEffect(() {
+      init();
+    }, []);
+
     return Scaffold(
+      appBar: AppBar(
+        title: Text(""),
+      ),
       body: Center(
         child: SfMaps(layers: <MapLayer>[
           MapShapeLayer(
             source: _dataSource,
-            initialMarkersCount: _data.length,
+            initialMarkersCount: contries.value.length,
             markerBuilder: (BuildContext context, int index) {
               return MapMarker(
-                latitude: _data[index].latitude,
-                longitude: _data[index].longitude,
-                iconColor: Colors.blue,
+                latitude: contries.value[index].latitude,
+                longitude: contries.value[index].longitude,
                 child: GestureDetector(
                   onTap: () {
                     print("${index}: onTap called.");
-                    selectedCountry.state = _data[index].country;
+                    selectedCountry.state = contries.value[index].country;
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const MovieList()));
                   },
-                  child: const Icon(Icons.add_location),
+                  child: Icon(
+                      Icons.add_location,
+                      color: contries.value[index].count > 0 ? Colors.red : Colors.grey,
+                      size: 30,
+                  ),
                 ),
               );
             },
+            controller: _controller,
           ),
         ],),
       ),

@@ -36,6 +36,19 @@ class CollectionDB {
     return data.isNotEmpty;
   }
 
+  static Future<List<CollectionCountModel>> hasCountCountry(Database db) async {
+    final List<Map<String, dynamic>> data = await db.rawQuery(
+      'SELECT country, COUNT(country) as count FROM collection GROUP BY country'
+    );
+
+    return List.generate(data.length, (i) {
+      return CollectionCountModel(
+        country: data[i]['country'],
+        count: data[i]['count'],
+      );
+    });
+  }
+
   static Future<List<CollectionModel>> all(Database db) async {
     final List<Map<String, dynamic>> data = await db.query('collection');
 

@@ -3,7 +3,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter/material.dart';
 import 'package:movie/src/models/searchMovies.dart';
 import 'package:movie/src/sqlite/collection.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:movie/src/apis/movie.dart';
 
 class MovieDetail extends HookConsumerWidget {
@@ -20,7 +19,6 @@ class MovieDetail extends HookConsumerWidget {
     final hasBool = useState<bool>(false);
 
     void init() async {
-      print('init');
       final db = await DB.instance.database;
       hasBool.value = await CollectionDB.hasById(db, id);
       final data = await movieApi.fetchMovie(id);
