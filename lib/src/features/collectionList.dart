@@ -49,12 +49,10 @@ class CollectionList extends HookConsumerWidget {
                       return GestureDetector(
                         child: _listItem(movies.value[index]),
                         onTap: (() {
-                          /*
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => MovieDetail(args: movies.value[index], country: selectedCountry.state)),
+                            MaterialPageRoute(builder: (context) => MovieDetail(id: movies.value[index].id, country: movies.value[index].country ?? '')),
                           );
-                           */
                         }),
                       );
                     },

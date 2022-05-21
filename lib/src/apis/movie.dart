@@ -25,5 +25,21 @@ class MovieApi {
       throw Exception(e);
     }
   }
+
+  dynamic fetchMovie(int id) async {
+    try{
+      final response = await Dio().get(
+          '$apiUrl/movie/$id',
+          queryParameters: {
+            'api_key': dotenv.env['MOVIEDB_APIKEY'],
+            'language': language,
+          }
+      );
+      return response.data;
+    } catch (e) {
+      print(e);
+      throw Exception(e);
+    }
+  }
 }
 

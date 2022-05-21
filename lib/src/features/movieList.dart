@@ -69,7 +69,7 @@ class MovieList extends HookConsumerWidget {
                         onTap: (() {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => MovieDetail(args: movies.value[index], country: selectedCountry.state)),
+                            MaterialPageRoute(builder: (context) => MovieDetail(id: movies.value[index].id, country: selectedCountry.state)),
                           );
                         }),
                     );

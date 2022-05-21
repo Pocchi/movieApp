@@ -1,45 +1,46 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter/material.dart';
 import 'package:movie/src/models/searchMovies.dart';
 import 'package:movie/src/sqlite/collection.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:movie/src/apis/movie.dart';
 
-class MovieDetail extends StatefulWidget {
+class MovieDetail extends HookConsumerWidget {
   final int id;
   final String country;
   const MovieDetail({Key? key, required this.id, required this.country}) : super(key: key);
 
-  State<MovieDetail> createState() => _MovieDetailState();
-}
-
-class _MovieDetailState extends State<MovieDetail> {
-  late Database db;
-  bool _hasBool = false;
-  void _setHas(bool setBool) {
-    _hasBool = setBool;
-  }
-
-  void init() async {
-    print('init');
-    db = await DB.instance.database;
-    _hasBool = await CollectionDB.hasById(db, widget.args.id);
-  }
-
   @override
-  void initState() {
-    super.initState();
-    init();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final movieApi = MovieApi();
+    late Database db;
+    bool _hasBool = false;
+    final movie = useState<MovieDetailModel?>(null);
+    void _setHas(bool setBool) {
+      _hasBool = setBool;
+    }
 
-  @override
-  Widget build(BuildContext context) {
+    void init() async {
+      print('init');
+      db = await DB.instance.database;
+      _hasBool = await CollectionDB.hasById(db, id);
+      final data = await movieApi.fetchMovie(id);
+      Map<String, dynamic> decodeData = data;
+      movie.value = MovieDetailModel.fromJson(decodeData);
+    }
+
+    useEffect(() {
+      init();
+    }, []);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(""),
       ),
-      body: Column(
+      body: movie.value != null ? Column(
         children: [
-          _imageView(widget.args),
+          _imageView(movie.value!),
           Align(
             alignment: Alignment.centerRight,
             child: Container(
@@ -48,11 +49,11 @@ class _MovieDetailState extends State<MovieDetail> {
                 onPressed: () async {
                   if (_hasBool) {
                     // コレクションから削除
-                    var result = await CollectionDB.delete(db, widget.args.id);
+                    var result = await CollectionDB.delete(db, id);
                     _setHas(false);
                   } else {
                     // コレクションに保存
-                    var collection = CollectionModel(id: widget.args.id, title: widget.args.title, posterPath: widget.args.posterPath);
+                    var collection = CollectionModel(id: id, title: movie.value?.title, posterPath: movie.value?.posterPath, country: country);
                     var result = await CollectionDB.insert(db, collection);
                     _setHas(true);
                   }
@@ -69,7 +70,7 @@ class _MovieDetailState extends State<MovieDetail> {
             padding: const EdgeInsets.only(top: 5,left: 15, right: 15),
             alignment: Alignment.centerLeft,
             child: Text(
-              widget.args.title ?? '',
+              movie.value?.title ?? '',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -81,7 +82,7 @@ class _MovieDetailState extends State<MovieDetail> {
             padding: const EdgeInsets.only(top: 10,left: 15, right: 15),
             alignment: Alignment.centerLeft,
             child: Text(
-              widget.args.overview ?? '',
+              movie.value?.overview ?? '',
               style: const TextStyle(
                 fontSize: 15,
                 color: Colors.black,
@@ -92,7 +93,7 @@ class _MovieDetailState extends State<MovieDetail> {
             padding: const EdgeInsets.only(top: 15,left: 15, right: 15),
             alignment: Alignment.centerLeft,
             child: Text(
-              '公開日: ${widget.args.releaseDate}',
+              '公開日: ${movie.value?.releaseDate}',
               style: const TextStyle(
                 fontSize: 13,
                 color: Colors.black,
@@ -100,10 +101,11 @@ class _MovieDetailState extends State<MovieDetail> {
             ),
           ),
         ],
-      ),
+      ) : Container(),
     );
   }
-  Widget _imageView(MovieResultModel movie) {
+
+  Widget _imageView(MovieDetailModel movie) {
     String? backdropPath = movie.backdropPath;
     String? posterPath = movie.posterPath;
     String? path = backdropPath ?? posterPath;
@@ -118,7 +120,7 @@ class _MovieDetailState extends State<MovieDetail> {
           }),
     );
   }
-  Widget _noImageView(MovieResultModel movie) {
+  Widget _noImageView(MovieDetailModel movie) {
     const noImage = 'assets/images/noimage@3x.png';
     return Stack(alignment: AlignmentDirectional.center,
         children:[
