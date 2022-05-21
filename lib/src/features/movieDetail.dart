@@ -9,22 +9,20 @@ import 'package:movie/src/apis/movie.dart';
 class MovieDetail extends HookConsumerWidget {
   final int id;
   final String country;
-  const MovieDetail({Key? key, required this.id, required this.country}) : super(key: key);
+
+  const MovieDetail({Key? key, required this.id, required this.country})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final movieApi = MovieApi();
-    late Database db;
-    bool _hasBool = false;
     final movie = useState<MovieDetailModel?>(null);
-    void _setHas(bool setBool) {
-      _hasBool = setBool;
-    }
+    final hasBool = useState<bool>(false);
 
     void init() async {
       print('init');
-      db = await DB.instance.database;
-      _hasBool = await CollectionDB.hasById(db, id);
+      final db = await DB.instance.database;
+      hasBool.value = await CollectionDB.hasById(db, id);
       final data = await movieApi.fetchMovie(id);
       Map<String, dynamic> decodeData = data;
       movie.value = MovieDetailModel.fromJson(decodeData);
@@ -47,27 +45,31 @@ class MovieDetail extends HookConsumerWidget {
               padding: const EdgeInsets.only(top: 10, right: 20),
               child: IconButton(
                 onPressed: () async {
-                  if (_hasBool) {
+                  final db = await DB.instance.database;
+                  if (hasBool.value) {
                     // コレクションから削除
                     var result = await CollectionDB.delete(db, id);
-                    _setHas(false);
+                    hasBool.value = false;
                   } else {
                     // コレクションに保存
-                    var collection = CollectionModel(id: id, title: movie.value?.title, posterPath: movie.value?.posterPath, country: country);
+                    var collection = CollectionModel(id: id,
+                        title: movie.value?.title,
+                        posterPath: movie.value?.posterPath,
+                        country: country);
                     var result = await CollectionDB.insert(db, collection);
-                    _setHas(true);
+                    hasBool.value = true;
                   }
                 },
                 icon: Icon(
                   Icons.star,
-                  color: _hasBool ? Colors.yellow : Colors.grey,
+                  color: hasBool.value ? Colors.yellow : Colors.grey,
                   size: 35,
                 ),
               ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.only(top: 5,left: 15, right: 15),
+            padding: const EdgeInsets.only(top: 5, left: 15, right: 15),
             alignment: Alignment.centerLeft,
             child: Text(
               movie.value?.title ?? '',
@@ -78,31 +80,28 @@ class MovieDetail extends HookConsumerWidget {
               ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.only(top: 10,left: 15, right: 15),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              movie.value?.overview ?? '',
-              style: const TextStyle(
-                fontSize: 15,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(top: 15,left: 15, right: 15),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '公開日: ${movie.value?.releaseDate}',
-              style: const TextStyle(
-                fontSize: 13,
-                color: Colors.black,
-              ),
-            ),
-          ),
+          _textView(movie.value?.overview),
+          _textView(movie.value?.tagline),
+          _textView('公開日: ${movie.value?.releaseDate}'),
+          _textView('ステータス: ${movie.value?.status}'),
         ],
       ) : Container(),
     );
+  }
+
+  Widget _textView(String? text) {
+    if (text == null) return Container();
+   return Container(
+       padding: const EdgeInsets.only(top: 10, left: 15, right: 15),
+       alignment: Alignment.centerLeft,
+       child: Text(
+         text,
+         style: const TextStyle(
+           fontSize: 15,
+           color: Colors.black,
+         ),
+       ),
+     );
   }
 
   Widget _imageView(MovieDetailModel movie) {

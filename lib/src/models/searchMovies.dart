@@ -141,6 +141,7 @@ class MovieDetailModel {
   final double voteAverage;
   final int? voteCount;
   final String? status;
+  final String? tagline;
 
   MovieDetailModel({
     this.adult,
@@ -158,6 +159,7 @@ class MovieDetailModel {
     required this.voteAverage,
     this.voteCount,
     this.status,
+    this.tagline,
   });
 
   Map<String, dynamic> toMap() {
@@ -177,6 +179,7 @@ class MovieDetailModel {
       'voteAverage': voteAverage,
       'voteCount': voteCount,
       'status': status,
+      'tagline': tagline,
     };
   }
 
@@ -197,6 +200,7 @@ class MovieDetailModel {
       voteAverage: json['vote_average'].toDouble(),
       voteCount: json['voteCount'] as int?,
       status: json['status'] as String?,
+      tagline: json['tagline'] as String?,
     );
   }
 }

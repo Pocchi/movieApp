@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movie/src/features/searchMovies.dart';
 import 'package:movie/src/features/map.dart';
-import 'package:movie/src/features/movieList.dart';
 import 'package:movie/src/models/globalState.dart';
-import 'package:movie/src/features/movieDetail.dart';
 import 'package:movie/src/features/collectionList.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:movie/src/sqlite/collection.dart';
@@ -59,9 +55,7 @@ class ScreenContainer extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tabType = ref.watch(tabTypeProvider.state);
     final _screens = [
-      // const MovieDetail(),
-      // const Map(),
-      // const MovieList(),
+      const Map(),
       const CollectionList(),
     ];
 
