@@ -68,13 +68,13 @@ class ScreenContainer extends HookConsumerWidget {
         },
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.map),
+            icon: tabType.state == TabType.values[0] ? Icon(Icons.map, size: 28) : Icon(Icons.map_outlined),
             label: 'map',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.collections_bookmark),
+            icon: tabType.state == TabType.values[1] ? Icon(Icons.collections_bookmark, size: 28) : Icon(Icons.collections_bookmark_outlined),
             label: 'collection',
           ),
         ],

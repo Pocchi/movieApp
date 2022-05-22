@@ -79,7 +79,7 @@ class Map extends HookConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 25, bottom: 20),
+                      padding: const EdgeInsets.only(top: 35, bottom: 20),
                       child: Text(
                         "${collectionNumber.value}/${countries.value.length}",
                         style: const TextStyle(
@@ -138,11 +138,11 @@ class Map extends HookConsumerWidget {
   }
 
   Widget _label(CountryModel country) {
-    String text = '${country.country}: ${country.count}';
+    String text = '${country.country}  ${country.count}';
     return Container(
         margin: const EdgeInsets.all(3),
         decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.blueGrey.shade400.withOpacity(0.6),
             border: Border.all(color: Colors.white),
             borderRadius: BorderRadius.circular(20.0)
         ),
@@ -153,7 +153,7 @@ class Map extends HookConsumerWidget {
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 15,
-              color: Colors.blueGrey,
+              color: Colors.white,
             ),
           ),
         ),
