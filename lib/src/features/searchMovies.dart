@@ -15,6 +15,7 @@ class SearchMovies extends HookWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('映画を探す'),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Center(
         child: Column(

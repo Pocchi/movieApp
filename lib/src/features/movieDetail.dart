@@ -33,6 +33,7 @@ class MovieDetail extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(""),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: movie.value != null ? Column(
         children: [

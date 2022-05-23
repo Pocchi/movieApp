@@ -32,6 +32,7 @@ class CollectionList extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Collections"),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Stack(
           children: [

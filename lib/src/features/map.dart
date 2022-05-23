@@ -9,7 +9,8 @@ import 'package:movie/src/features/movieList.dart';
 import 'package:movie/src/sqlite/collection.dart';
 import 'package:movie/src/models/searchMovies.dart';
 import 'package:collection/collection.dart';
-
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'dart:async';
 
 class CountryModel {
   CountryModel(this.country, this.latitude, this.longitude, this.count);
@@ -59,6 +60,7 @@ class Map extends HookConsumerWidget {
         }
         _controller.insertMarker(index);
       });
+      Timer(const Duration(seconds: 1), () => FlutterNativeSplash.remove());
     }
 
     useEffect(() {
@@ -68,11 +70,28 @@ class Map extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Select"),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Stack(
           fit: StackFit.passthrough,
           children: [
-            Positioned(
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [
+                  Color.fromRGBO(28, 208, 178, 0.5),
+                  Color.fromRGBO(128, 208, 0, 0.4),
+                  Colors.white60,
+                  Colors.white60,
+                  Colors.white60,
+                  Color.fromRGBO(188, 208, 0, 0.5),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
               top: 0,
               width: MediaQuery.of(context).size.width,
               child: Column(

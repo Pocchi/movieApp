@@ -50,6 +50,7 @@ class MovieList extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("${selectedCountry.state} Movies"),
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Stack(
           children: [

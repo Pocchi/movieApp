@@ -6,10 +6,13 @@ import 'package:movie/src/models/globalState.dart';
 import 'package:movie/src/features/collectionList.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:movie/src/sqlite/collection.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 late Database db;
 
 Future main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await dotenv.load(fileName: "assets/.env");
   var db = await DB.instance.database;
   runApp(
@@ -34,7 +37,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Movie Trip',
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: Colors.grey[50],
+        primaryColor: Color.fromRGBO(50, 50, 55, 1),
       ),
       darkTheme: ThemeData(
       brightness: Brightness.dark,
