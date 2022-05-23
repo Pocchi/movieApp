@@ -31,6 +31,7 @@ class Map extends HookConsumerWidget {
     final selectedCountry = ref.watch(countryProvider.state);
     final countries = useState<List<CountryModel>>([]);
     final collectionNumber = useState(0);
+    final animationNumber = useState(0);
     List<CountryModel> _data = <CountryModel>[
       CountryModel('Brazil', -14.235004, -51.92528, 0),
       CountryModel('Germany', 51.16569, 10.451526, 0),
@@ -61,6 +62,13 @@ class Map extends HookConsumerWidget {
         _controller.insertMarker(index);
       });
       Timer(const Duration(seconds: 1), () => FlutterNativeSplash.remove());
+      animationNumber.value += 1;
+      Timer.periodic(
+        const Duration(seconds: 15),
+        (Timer timer) {
+          animationNumber.value += 1;
+        },
+      );
     }
 
     useEffect(() {
@@ -150,7 +158,8 @@ class Map extends HookConsumerWidget {
                 ),
               ],
               ),
-            )
+            ),
+            _airplane(animationNumber.value, context),
           ]
       ),
     );
@@ -161,7 +170,7 @@ class Map extends HookConsumerWidget {
     return Container(
         margin: const EdgeInsets.all(3),
         decoration: BoxDecoration(
-            color: Colors.blueGrey.shade400.withOpacity(0.6),
+            color: const Color.fromRGBO(30, 35, 100, 0.5),
             border: Border.all(color: Colors.white),
             borderRadius: BorderRadius.circular(20.0)
         ),
@@ -176,6 +185,21 @@ class Map extends HookConsumerWidget {
             ),
           ),
         ),
+    );
+  }
+
+  Widget _airplane(int animationNumber, context) {
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 12500),
+      top: animationNumber % 2 == 0 ? -28 : MediaQuery.of(context).size.height,
+      left: animationNumber % 2 == 0 ? MediaQuery.of(context).size.width - 280 : MediaQuery.of(context).size.width - 250,
+      child: const Container(
+        child: Icon(
+            Icons.flight, size: 28,
+            color: Color.fromRGBO(30, 35, 100, animationNumber % 2 == 0 ? 1 : 0),
+        ),
+    ),
+      curve: Curves.easeInOut,
     );
   }
 }

@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Movie Trip',
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: Color.fromRGBO(50, 50, 55, 1),
+        primaryColor: const Color.fromRGBO(50, 50, 55, 1),
       ),
       darkTheme: ThemeData(
       brightness: Brightness.dark,
