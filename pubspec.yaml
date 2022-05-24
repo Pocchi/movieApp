@@ -40,6 +40,8 @@ dependencies:
   flutter_hooks: ^0.18.3
   flutter_native_splash: ^2.1.6
   syncfusion_flutter_maps: ^20.1.52
+  sqflite: ^2.0.2
+  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:

@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movie/src/features/searchMovies.dart';
 import 'package:movie/src/features/map.dart';
-import 'package:movie/src/features/movieList.dart';
 import 'package:movie/src/models/globalState.dart';
+import 'package:movie/src/features/collectionList.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:movie/src/sqlite/collection.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+
+late Database db;
 
 Future main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await dotenv.load(fileName: "assets/.env");
+  var db = await DB.instance.database;
   runApp(
     const ProviderScope(
      child: MyApp(),
@@ -16,8 +22,14 @@ Future main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +37,7 @@ class MyApp extends StatelessWidget {
       title: 'Movie Trip',
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: Colors.grey[50],
+        primaryColor: const Color.fromRGBO(50, 50, 55, 1),
       ),
       darkTheme: ThemeData(
       brightness: Brightness.dark,
@@ -47,7 +59,7 @@ class ScreenContainer extends HookConsumerWidget {
     final tabType = ref.watch(tabTypeProvider.state);
     final _screens = [
       const Map(),
-      // const MovieList(),
+      const CollectionList(),
     ];
 
     return Scaffold(
@@ -59,13 +71,13 @@ class ScreenContainer extends HookConsumerWidget {
         },
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.map),
+            icon: tabType.state == TabType.values[0] ? Icon(Icons.map, size: 28) : Icon(Icons.map_outlined),
             label: 'map',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.collections_bookmark),
+            icon: tabType.state == TabType.values[1] ? Icon(Icons.collections_bookmark, size: 28) : Icon(Icons.collections_bookmark_outlined),
             label: 'collection',
           ),
         ],
