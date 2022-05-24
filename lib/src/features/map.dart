@@ -193,7 +193,7 @@ class Map extends HookConsumerWidget {
       duration: const Duration(milliseconds: 12500),
       top: animationNumber % 2 == 0 ? -28 : MediaQuery.of(context).size.height,
       left: animationNumber % 2 == 0 ? MediaQuery.of(context).size.width - 280 : MediaQuery.of(context).size.width - 250,
-      child: const Container(
+      child: Container(
         child: Icon(
             Icons.flight, size: 28,
             color: Color.fromRGBO(30, 35, 100, animationNumber % 2 == 0 ? 1 : 0),
