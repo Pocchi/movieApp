@@ -49,11 +49,12 @@ class CollectionList extends HookConsumerWidget {
                     delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
                       return GestureDetector(
                         child: _listItem(movies.value[index]),
-                        onTap: (() {
-                          Navigator.push(
+                        onTap: (() async {
+                          final result = await Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => MovieDetail(id: movies.value[index].id, country: movies.value[index].country ?? '')),
+                            MaterialPageRoute(builder: (context) => MovieDetail(id: movies.value[index].id, country: movies.value[index].country)),
                           );
+                          fetchData();
                         }),
                       );
                     },

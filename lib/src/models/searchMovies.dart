@@ -106,13 +106,13 @@ class CollectionModel {
   final int id;
   final String? title;
   final String? posterPath;
-  final String? country;
+  final String country;
 
   CollectionModel({
     required this.id,
     this.title,
     this.posterPath,
-    this.country,
+    required this.country,
   });
 
   Map<String, dynamic> toMap() {

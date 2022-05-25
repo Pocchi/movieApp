@@ -32,11 +32,23 @@ class Map extends HookConsumerWidget {
       primaryValueMapper: (index) => stateCountries[index].country,
     );
 
+    void update() async {
+      print("update");
+      collectionNumber.value = 0;
+      for (int i = 0; i < stateCountries.length; i++) {
+        // TODO: 差分だけupdateする
+        if (stateCountries[i].count > 0) collectionNumber.value += 1;
+        _controller.updateMarkers([i]);
+        print(stateCountries[i].count);
+      }
+    }
+
     void init() async {
+      print("init");
       _controller = MapShapeLayerController();
       // _controller.insertMarker(index);
       countriesNotifier.initCountries();
-      Timer(const Duration(seconds: 1), () => FlutterNativeSplash.remove());
+      /*
       animationNumber.value += 1;
       Timer.periodic(
         const Duration(seconds: 15),
@@ -44,18 +56,18 @@ class Map extends HookConsumerWidget {
           animationNumber.value += 1;
         },
       );
+
+       */
     }
 
     useEffect(() {
       init();
+      Timer(const Duration(seconds: 1), () => FlutterNativeSplash.remove());
     }, []);
 
     useEffect(() {
-      print("stateCountries");
-      for (int i = 0; i < stateCountries.length; i++) {
-        // TODO: 差分だけupdateする
-        _controller.updateMarkers([i]);
-      }
+      print("useEffect");
+      update();
     });
 
     return Scaffold(
@@ -120,9 +132,11 @@ class Map extends HookConsumerWidget {
                       latitude: stateCountries[index].latitude,
                       longitude: stateCountries[index].longitude,
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           selectedCountry.state = stateCountries[index].country;
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const MovieList()));
+                          final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const MovieList()));
+                          print("test");
+                          update();
                         },
                         child: Icon(
                             stateCountries[index].count > 0 ? Icons.where_to_vote : Icons.flag,

@@ -44,24 +44,27 @@ class Countries extends StateNotifier<List<CountryModel>> {
   void incrementCountByCountry(String country) {
     var countryIndex = state.indexWhere((item) => item.country == country);
     state[countryIndex].increment();
-    // DBに保存
   }
 
   void decrementCountByCountry(String country) {
     var countryIndex = state.indexWhere((item) => item.country == country);
     state[countryIndex].decrement();
-    // DBに保存
   }
 
-  void initCountries() async {
+  Future initCountries() async {
     final db = await DB.instance.database;
     var counts = await CollectionDB.hasCountCountry(db);
     counts.asMap().forEach((index, element) {
+      print(element.country);
+      print(element.count);
       var country = element.country;
       var countryIndex = state.indexWhere((item) => item.country == country);
-      state[countryIndex].setCount(element.count);
-      print("set");
-      print(element.count);
+      if (countryIndex >= 0) {
+        print(countryIndex);
+        state[countryIndex].setCount(element.count);
+        print("set");
+        print(element.count);
+      }
     });
   }
 }

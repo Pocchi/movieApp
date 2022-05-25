@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:movie/src/models/searchMovies.dart';
 import 'package:movie/src/sqlite/collection.dart';
 import 'package:movie/src/apis/movie.dart';
+import 'package:movie/src/models/globalState.dart';
 
 class MovieDetail extends HookConsumerWidget {
   final int id;
@@ -17,8 +18,10 @@ class MovieDetail extends HookConsumerWidget {
     final movieApi = MovieApi();
     final movie = useState<MovieDetailModel?>(null);
     final hasBool = useState<bool>(false);
+    final countriesNotifier = ref.read(countriesProvider.notifier);
 
     void init() async {
+      print(country);
       final db = await DB.instance.database;
       hasBool.value = await CollectionDB.hasById(db, id);
       final data = await movieApi.fetchMovie(id);
@@ -49,15 +52,19 @@ class MovieDetail extends HookConsumerWidget {
                     // コレクションから削除
                     var result = await CollectionDB.delete(db, id);
                     hasBool.value = false;
+                    print(false);
                   } else {
                     // コレクションに保存
+                    print(country);
                     var collection = CollectionModel(id: id,
                         title: movie.value?.title,
                         posterPath: movie.value?.posterPath,
                         country: country);
                     var result = await CollectionDB.insert(db, collection);
                     hasBool.value = true;
+                    print(true);
                   }
+                  await countriesNotifier.initCountries();
                 },
                 icon: Icon(
                   Icons.star,
