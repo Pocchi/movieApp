@@ -33,18 +33,15 @@ class Map extends HookConsumerWidget {
     );
 
     void update() async {
-      print("update");
       collectionNumber.value = 0;
       for (int i = 0; i < stateCountries.length; i++) {
         // TODO: 差分だけupdateする
         if (stateCountries[i].count > 0) collectionNumber.value += 1;
         _controller.updateMarkers([i]);
-        print(stateCountries[i].count);
       }
     }
 
     void init() async {
-      print("init");
       _controller = MapShapeLayerController();
       // _controller.insertMarker(index);
       countriesNotifier.initCountries();

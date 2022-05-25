@@ -21,7 +21,6 @@ class MovieDetail extends HookConsumerWidget {
     final countriesNotifier = ref.read(countriesProvider.notifier);
 
     void init() async {
-      print(country);
       final db = await DB.instance.database;
       hasBool.value = await CollectionDB.hasById(db, id);
       final data = await movieApi.fetchMovie(id);
@@ -52,17 +51,14 @@ class MovieDetail extends HookConsumerWidget {
                     // コレクションから削除
                     var result = await CollectionDB.delete(db, id);
                     hasBool.value = false;
-                    print(false);
                   } else {
                     // コレクションに保存
-                    print(country);
                     var collection = CollectionModel(id: id,
                         title: movie.value?.title,
                         posterPath: movie.value?.posterPath,
                         country: country);
                     var result = await CollectionDB.insert(db, collection);
                     hasBool.value = true;
-                    print(true);
                   }
                   await countriesNotifier.initCountries();
                 },
