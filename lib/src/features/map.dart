@@ -45,16 +45,8 @@ class Map extends HookConsumerWidget {
       _controller = MapShapeLayerController();
       // _controller.insertMarker(index);
       countriesNotifier.initCountries();
-      /*
       animationNumber.value += 1;
-      Timer.periodic(
-        const Duration(seconds: 15),
-        (Timer timer) {
-          animationNumber.value += 1;
-        },
-      );
-
-       */
+      Timer(const Duration(seconds: 1), () => animationNumber.value += 1);
     }
 
     useEffect(() {
