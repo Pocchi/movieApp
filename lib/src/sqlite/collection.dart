@@ -57,6 +57,7 @@ class CollectionDB {
         id: data[i]['id'],
         title: data[i]['title'],
         posterPath: data[i]['posterPath'],
+        country: data[i]['country'],
       );
     });
   }

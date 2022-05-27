@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movie/src/apis/movie.dart';
-import 'package:movie/src/models/globalState.dart';
 import 'package:movie/src/models/searchMovies.dart';
 import 'package:movie/src/features/movieDetail.dart';
 import 'package:movie/src/sqlite/collection.dart';
-import 'package:sqflite/sqflite.dart';
 
 const double itemWidth = 220;
 const double itemHeight = 330;
@@ -49,11 +46,12 @@ class CollectionList extends HookConsumerWidget {
                     delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
                       return GestureDetector(
                         child: _listItem(movies.value[index]),
-                        onTap: (() {
-                          Navigator.push(
+                        onTap: (() async {
+                          final result = await Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => MovieDetail(id: movies.value[index].id, country: movies.value[index].country ?? '')),
+                            MaterialPageRoute(builder: (context) => MovieDetail(id: movies.value[index].id, country: movies.value[index].country)),
                           );
+                          fetchData();
                         }),
                       );
                     },

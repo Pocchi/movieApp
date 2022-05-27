@@ -1,25 +1,11 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:syncfusion_flutter_maps/maps.dart';
 import 'package:movie/src/models/globalState.dart';
 import 'package:movie/src/features/movieList.dart';
-import 'package:movie/src/sqlite/collection.dart';
-import 'package:movie/src/models/searchMovies.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'dart:async';
-
-class CountryModel {
-  CountryModel(this.country, this.latitude, this.longitude, this.count);
-
-  final String country;
-  final double latitude;
-  final double longitude;
-  final int count;
-}
 
 late MapShapeLayerController _controller;
 
@@ -29,55 +15,47 @@ class Map extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedCountry = ref.watch(countryProvider.state);
-    final countries = useState<List<CountryModel>>([]);
+    final stateCountries = ref.watch(countriesProvider);
+    final countriesNotifier = ref.read(countriesProvider.notifier);
     final collectionNumber = useState(0);
     final animationNumber = useState(0);
-    List<CountryModel> _data = <CountryModel>[
-      CountryModel('Brazil', -14.235004, -51.92528, 0),
-      CountryModel('Germany', 51.16569, 10.451526, 0),
-      CountryModel('Australia', -25.274398, 133.775136, 0),
-      CountryModel('India', 20.593684, 78.96288, 0),
-      CountryModel('Russia', 61.52401, 105.318756, 0)
-    ];
     final MapShapeSource _dataSource = MapShapeSource.asset(
       'assets/countries.json',
       shapeDataField: 'name',
-      dataCount: _data.length,
-      primaryValueMapper: (index) => _data[index].country,
+      dataCount: stateCountries.length,
+      primaryValueMapper: (index) => stateCountries[index].country,
     );
+
+    void update() async {
+      collectionNumber.value = 0;
+      for (int i = 0; i < stateCountries.length; i++) {
+        // TODO: 差分だけupdateする
+        if (stateCountries[i].count > 0) collectionNumber.value += 1;
+        _controller.updateMarkers([i]);
+      }
+    }
 
     void init() async {
       _controller = MapShapeLayerController();
-      final db = await DB.instance.database;
-      var counts = await CollectionDB.hasCountCountry(db);
-      _data.asMap().forEach((index, element) {
-        var country = element.country;
-        var getCount = counts.firstWhereOrNull((item) => item.country == country);
-        if (getCount != null) {
-          collectionNumber.value += getCount.count;
-          countries.value.add(CountryModel(element.country, element.latitude, element.longitude, getCount.count));
-        } else {
-          countries.value.add(element);
-        }
-        _controller.insertMarker(index);
-      });
-      Timer(const Duration(seconds: 1), () => FlutterNativeSplash.remove());
+      // _controller.insertMarker(index);
+      countriesNotifier.initCountries();
       animationNumber.value += 1;
-      Timer.periodic(
-        const Duration(seconds: 15),
-        (Timer timer) {
-          animationNumber.value += 1;
-        },
-      );
+      Timer(const Duration(seconds: 1), () => animationNumber.value += 1);
     }
 
     useEffect(() {
       init();
+      Timer(const Duration(seconds: 1), () => FlutterNativeSplash.remove());
     }, []);
+
+    useEffect(() {
+      print("useEffect");
+      update();
+    });
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Select"),
+        title: const Text("Select Country"),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: Stack(
@@ -108,7 +86,7 @@ class Map extends HookConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 35, bottom: 20),
                       child: Text(
-                        "${collectionNumber.value}/${countries.value.length}",
+                        "${collectionNumber.value}/${stateCountries.length}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 25,
@@ -117,7 +95,7 @@ class Map extends HookConsumerWidget {
                       ),
                     ),
                     Wrap(
-                     children: countries.value.map((country) => _label(country)).toList(),
+                     children: stateCountries.map((country) => _label(country)).toList(),
                     ),
                   ]
               )
@@ -129,21 +107,23 @@ class Map extends HookConsumerWidget {
               child: SfMaps(layers: <MapLayer>[
                 MapShapeLayer(
                   source: _dataSource,
-                  initialMarkersCount: countries.value.length,
+                  initialMarkersCount: stateCountries.length,
                   color: Colors.blueGrey[100],
                   strokeColor: Colors.blueGrey[230],
                   markerBuilder: (BuildContext context, int index) {
                     return MapMarker(
-                      latitude: countries.value[index].latitude,
-                      longitude: countries.value[index].longitude,
+                      latitude: stateCountries[index].latitude,
+                      longitude: stateCountries[index].longitude,
                       child: GestureDetector(
-                        onTap: () {
-                          selectedCountry.state = countries.value[index].country;
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const MovieList()));
+                        onTap: () async {
+                          selectedCountry.state = stateCountries[index].country;
+                          final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const MovieList()));
+                          print("test");
+                          update();
                         },
                         child: Icon(
-                            countries.value[index].count > 0 ? Icons.where_to_vote : Icons.flag,
-                            color: countries.value[index].count > 0 ? Colors.pink.shade400.withOpacity(0.8) : Colors.teal.shade400.withOpacity(0.8),
+                            stateCountries[index].count > 0 ? Icons.where_to_vote : Icons.flag,
+                            color: stateCountries[index].count > 0 ? Colors.pink.shade400.withOpacity(0.8) : Colors.teal.shade400.withOpacity(0.8),
                             size: 40,
                         ),
                       ),
