@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:dio/dio.dart';
 import 'package:movie/src/apis/movie.dart';
 
 class SearchMovies extends HookWidget {

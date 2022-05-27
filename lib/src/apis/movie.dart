@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:movie/src/models/searchMovies.dart';
 
 const apiUrl = 'https://api.themoviedb.org/3';
 const language = 'ja';

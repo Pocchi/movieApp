@@ -1,7 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:state_notifier/state_notifier.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:collection/collection.dart';
 import 'package:movie/src/sqlite/collection.dart';
 
 enum TabType { map, collectionList }
