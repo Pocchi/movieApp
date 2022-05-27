@@ -5,6 +5,10 @@ import 'package:movie/src/models/searchMovies.dart';
 import 'package:movie/src/sqlite/collection.dart';
 import 'package:movie/src/apis/movie.dart';
 import 'package:movie/src/models/globalState.dart';
+import 'dart:math';
+import 'package:confetti/confetti.dart';
+
+late ConfettiController _controllerCenter;
 
 class MovieDetail extends HookConsumerWidget {
   final int id;
@@ -27,51 +31,67 @@ class MovieDetail extends HookConsumerWidget {
       final data = await movieApi.fetchMovie(id);
       Map<String, dynamic> decodeData = data;
       movie.value = MovieDetailModel.fromJson(decodeData);
+      _controllerCenter = ConfettiController(duration: const Duration(seconds: 10));
     }
 
     void dialog() async {
+      _controllerCenter.play();
       showDialog(
           barrierDismissible: false,
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('新しい国の映画を追加しました',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+          builder: (context) => Stack(
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: ConfettiWidget(
+                confettiController: _controllerCenter,
+                blastDirectionality: BlastDirectionality.explosive,
+                blastDirection: pi / 2,
+                numberOfParticles: 30,
+                gravity: 0.3,
+                canvas: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height),
+              )
             ),
-            content: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(text: '${countriesNotifier.hasCountryCount()}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 40,
-                      color: Color.fromRGBO(28, 108, 118, 1),
-                      wordSpacing: 0,
-                      letterSpacing: 5,
-                    ),
-                  ),
-                  TextSpan(text: '/${stateCountries.length}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
-                      color: Color.fromRGBO(108, 108, 118, 1),
-                      wordSpacing: 0,
-                      letterSpacing: 5,
-                    ),
-                  ),
-                ],
+            AlertDialog(
+              title: const Text('新しい国の映画を追加しました',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('閉じる'),
+              content: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(text: '${countriesNotifier.hasCountryCount()}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 40,
+                        color: Color.fromRGBO(28, 108, 118, 1),
+                        wordSpacing: 0,
+                        letterSpacing: 5,
+                      ),
+                    ),
+                    TextSpan(text: '/${stateCountries.length}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
+                        color: Color.fromRGBO(108, 108, 118, 1),
+                        wordSpacing: 0,
+                        letterSpacing: 5,
+                      ),
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
               ),
-            ],
-          )
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('閉じる'),
+                ),
+              ],
+            )
+          ])
       );
     }
 
@@ -85,7 +105,7 @@ class MovieDetail extends HookConsumerWidget {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: movie.value != null ? Column(
-        children: [
+          children: [
           _imageView(movie.value!),
           Align(
             alignment: Alignment.centerRight,
@@ -107,7 +127,7 @@ class MovieDetail extends HookConsumerWidget {
                     var result = await CollectionDB.insert(db, collection);
                     hasBool.value = true;
                   }
-                  final showDialog = !hasBool.value && countriesNotifier.hasCountry(country)
+                  final showDialog = !hasBool.value && countriesNotifier.hasCountry(country);
                   await countriesNotifier.initCountries();
                   if (!showDialog) {
                     dialog();
