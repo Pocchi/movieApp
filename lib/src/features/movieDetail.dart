@@ -18,6 +18,7 @@ class MovieDetail extends HookConsumerWidget {
     final movieApi = MovieApi();
     final movie = useState<MovieDetailModel?>(null);
     final hasBool = useState<bool>(false);
+    final stateCountries = ref.watch(countriesProvider);
     final countriesNotifier = ref.read(countriesProvider.notifier);
 
     void init() async {
@@ -26,6 +27,52 @@ class MovieDetail extends HookConsumerWidget {
       final data = await movieApi.fetchMovie(id);
       Map<String, dynamic> decodeData = data;
       movie.value = MovieDetailModel.fromJson(decodeData);
+    }
+
+    void dialog() async {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('新しい国の映画を追加しました',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(text: '${countriesNotifier.hasCountryCount()}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 40,
+                      color: Color.fromRGBO(28, 108, 118, 1),
+                      wordSpacing: 0,
+                      letterSpacing: 5,
+                    ),
+                  ),
+                  TextSpan(text: '/${stateCountries.length}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25,
+                      color: Color.fromRGBO(108, 108, 118, 1),
+                      wordSpacing: 0,
+                      letterSpacing: 5,
+                    ),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('閉じる'),
+              ),
+            ],
+          )
+      );
     }
 
     useEffect(() {
@@ -52,6 +99,9 @@ class MovieDetail extends HookConsumerWidget {
                     var result = await CollectionDB.delete(db, id);
                     hasBool.value = false;
                   } else {
+                    if (!countriesNotifier.hasCountry(country)) {
+                      dialog();
+                    }
                     // コレクションに保存
                     var collection = CollectionModel(id: id,
                         title: movie.value?.title,
