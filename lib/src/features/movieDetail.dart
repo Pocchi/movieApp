@@ -99,9 +99,6 @@ class MovieDetail extends HookConsumerWidget {
                     var result = await CollectionDB.delete(db, id);
                     hasBool.value = false;
                   } else {
-                    if (!countriesNotifier.hasCountry(country)) {
-                      dialog();
-                    }
                     // コレクションに保存
                     var collection = CollectionModel(id: id,
                         title: movie.value?.title,
@@ -110,7 +107,11 @@ class MovieDetail extends HookConsumerWidget {
                     var result = await CollectionDB.insert(db, collection);
                     hasBool.value = true;
                   }
+                  final showDialog = !hasBool.value && countriesNotifier.hasCountry(country)
                   await countriesNotifier.initCountries();
+                  if (!showDialog) {
+                    dialog();
+                  }
                 },
                 icon: Icon(
                   Icons.star,
