@@ -65,6 +65,16 @@ class Countries extends StateNotifier<List<CountryModel>> {
       }
     });
   }
+
+  bool hasCountry(String country) {
+    var countryState = state.firstWhere((item) => item.country == country);
+    return countryState.count > 0;
+  }
+
+  int hasCountryCount() {
+    var countries = state.where((item) => item.count > 0);
+    return countries.length;
+  }
 }
 
 
